@@ -96,3 +96,9 @@ pub fn factorial(n: u64) -> u64 {
         n * factorial(n - 1)
     }
 }
+
+pub fn read_file() -> String {
+    use std::fs;
+    const FILE_NAME: &str = "/Users/qiweiyu/Documents/work/rust/learn/project_euler/data.txt";
+    fs::read_to_string(FILE_NAME).unwrap()
+}

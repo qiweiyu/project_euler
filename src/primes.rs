@@ -4,6 +4,7 @@ pub fn is_prime(n: i64) -> bool {
     n > 1 && find_factors(n as u64).len() == 0
 }
 
+
 pub fn find_factors(n: u64) -> Vec<u64> {
     let s = (n as f64).sqrt().ceil() as u64;
     let mut f = vec![];
@@ -38,4 +39,21 @@ pub fn find_prime_factors(n: u64) -> HashMap<u64, u64> {
         }
     }
     res
+}
+
+pub fn generate_primes(limit: usize) -> Vec<usize> {
+    if limit < 2 {
+        return vec![];
+    }
+    let mut range = vec![true; limit+1];
+    let mut p_list = vec![];
+    for i in 2..limit {
+        if range[i] {
+            p_list.push(i);
+            for k in 2..=limit/i {
+                range[k*i] = false;
+            }
+        }
+    }
+    p_list
 }
