@@ -86,6 +86,7 @@ pub fn num_to_list(n: i32) -> Vec<i32> {
         res.push(num % 10);
         num = num / 10;
     }
+    res.reverse();
     res
 }
 

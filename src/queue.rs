@@ -1,3 +1,4 @@
+#[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Queue<T> {
     container: Vec<T>,
     head: usize,
@@ -70,6 +71,14 @@ impl<T> Queue<T>
             res.push(v);
         }
         res
+    }
+
+    pub fn roll(&mut self) {
+        if self.len() == 0 {
+            return;
+        }
+        let mut v = self.pop().unwrap();
+        self.insert(v);
     }
 
     fn _expand(&mut self) {
