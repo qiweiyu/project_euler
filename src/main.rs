@@ -4,42 +4,37 @@ mod primes;
 mod fib;
 mod queue;
 
-use primes::is_prime;
-use primes::generate_primes;
-use utils::num_to_list;
-use utils::list_to_num;
-use utils::get_all_order;
-use queue::Queue;
-
-use std::collections::HashSet;
+use crate::utils::change_to_base2;
+use crate::utils::i2a;
+use crate::utils::a2i;
 
 fn main() {
-    let primes = generate_primes(1_000_000);
     let mut res = vec![];
-    for p in &primes {
-        println!("{}", p);
-        let mut queue = Queue::from_vec(num_to_list(*p as i32));
-        let q1 = queue.clone();
-        let len = queue.len();
-        let mut pass = true;
-        let mut tt = vec![];
-        for i in 0..len {
-            queue.roll();
-            let n = list_to_num(queue.clone().into_vec());
-            tt.push(n);
-            if !primes.contains(&(n as usize)) {
-                pass = false;
-                break;
+    for i in 1..=1000 {
+        let str = i2a(i).as_bytes().to_vec();
+        let mut r_str = str.clone();
+        r_str.reverse();
+        let mut n1_str = str.clone();
+        n1_str.append(&mut r_str.clone());
+        let mut n2_str = str.clone();
+        n2_str.pop();
+        n2_str.append(&mut r_str.clone());
+        let list = vec![
+            a2i(String::from_utf8(n1_str).unwrap()),
+            a2i(String::from_utf8(n2_str).unwrap())];
+        for n in list {
+            if n > 1_000_000 {
+                continue;
             }
-        }
-        if pass {
-            res.push(p);
-            println!("{:?}", tt);
-            println!("{:?}", queue);
-            println!("{:?}", q1);
-            println!("{:?}", num_to_list(*p as i32));
+            let base2 = change_to_base2(n).as_bytes().to_vec();
+            let mut r_base2 = base2.clone();
+            r_base2.reverse();
+            if r_base2 == base2 {
+                res.push(n);
+            }
         }
     }
     println!("{:?}", res);
-    println!("{}", res.len());
+    let sum = res.into_iter().fold(0, |acc, x| { acc + &x });
+    println!("{}", sum)
 }

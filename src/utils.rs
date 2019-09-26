@@ -70,24 +70,26 @@ pub fn get_all_order<T>(list: &Vec<T>) -> Vec<Vec<T>>
     res
 }
 
-pub fn list_to_num(list: Vec<i32>) -> i32 {
+pub fn a2i(num_str: String) -> i32 {
     let mut res = 0;
-    for i in list {
+    let zero = '0' as u8;
+    for i in num_str.as_bytes() {
         res = res * 10;
-        res = res + i;
+        res = res + (*i - zero) as i32;
     }
     res
 }
 
-pub fn num_to_list(n: i32) -> Vec<i32> {
+pub fn i2a(n: i32) -> String {
     let mut res = vec![];
     let mut num = n;
+    let zero = '0' as u8;
     while num > 0 {
-        res.push(num % 10);
+        res.push((num % 10) as u8 + zero);
         num = num / 10;
     }
     res.reverse();
-    res
+    String::from_utf8(res).unwrap()
 }
 
 pub fn factorial(n: u64) -> u64 {
@@ -102,4 +104,17 @@ pub fn read_file() -> String {
     use std::fs;
     const FILE_NAME: &str = "/Users/qiweiyu/Documents/work/rust/learn/project_euler/data.txt";
     fs::read_to_string(FILE_NAME).unwrap()
+}
+
+
+pub fn change_to_base2(n: i32) -> String {
+    let mut list = vec![];
+    let mut num = n;
+    let zero = '0' as u8;
+    while num > 0 {
+        list.push((num & 1) as u8 + zero);
+        num = num / 2;
+    }
+    list.reverse();
+    String::from_utf8(list).unwrap()
 }
