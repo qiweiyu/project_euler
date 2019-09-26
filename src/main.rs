@@ -14,10 +14,10 @@ use queue::Queue;
 use std::collections::HashSet;
 
 fn main() {
-    let mut q = Queue::new();
-    q.put(29);
-    q.put(39);
-    q.put(31);
+    let mut q: Queue<i32> = Queue::new();
+    q.insert(29);
+    q.insert(39);
+    q.insert(31);
     //assert_eq!(q.take(), Some(29));
     //assert_eq!(q.take(), Some(39));
     //assert_eq!(q.take(), Some(31));

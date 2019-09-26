@@ -1,13 +1,15 @@
-pub struct Queue {
-    container: Vec<i32>,
+pub struct Queue<T> {
+    container: Vec<T>,
     head: usize,
     tail: usize,
 }
 
-impl Queue {
+impl<T> Queue<T>
+    where T: Default + Clone
+{
     pub fn new() -> Self {
         Queue {
-            container: vec![0; 10],
+            container: vec![T::default(); 10],
             head: 0,
             tail: 0,
         }
@@ -15,17 +17,17 @@ impl Queue {
 
     pub fn with_capacity(capacity: usize) -> Self {
         Queue {
-            container: vec![0; capacity],
+            container: vec![T::default(); capacity],
             head: 0,
             tail: 0,
         }
     }
 
-    pub fn from_vec(from: Vec<i32>) -> Self {
+    pub fn from_vec(from: Vec<T>) -> Self {
         let len = from.len();
-        let mut container_new = vec![0; len+1];
+        let mut container_new = vec![T::default(); len + 1];
         for i in 0..len {
-            container_new[i] = from[i];
+            container_new[i] = from[i].clone();
         }
         Queue {
             container: container_new,
@@ -34,7 +36,7 @@ impl Queue {
         }
     }
 
-    pub fn put(&mut self, v: i32) {
+    pub fn insert(&mut self, v: T) {
         let mut next_tail = (self.tail + 1) % self.container.capacity();
         if next_tail == self.head {
             self._expand();
@@ -44,13 +46,13 @@ impl Queue {
         self.tail = next_tail;
     }
 
-    pub fn take(&mut self) -> Option<i32> {
+    pub fn pop(&mut self) -> Option<T> {
         if self.head == self.tail {
             None
         } else {
             let cur_head = self.head;
             self.head = (self.head + 1) % self.container.capacity();
-            Some(self.container[cur_head])
+            Some(self.container[cur_head].clone())
         }
     }
 
@@ -62,18 +64,18 @@ impl Queue {
         self.container.capacity()
     }
 
-    pub fn into_vec(mut self) -> Vec<i32> {
+    pub fn into_vec(mut self) -> Vec<T> {
         let mut res = vec![];
-        while let Some(v) = self.take() {
+        while let Some(v) = self.pop() {
             res.push(v);
         }
         res
     }
 
     fn _expand(&mut self) {
-        let mut container_new = vec![0; self.capacity() * 2];
+        let mut container_new = vec![T::default(); self.capacity() * 2];
         let mut i = 0;
-        while let Some(v) = self.take() {
+        while let Some(v) = self.pop() {
             container_new[i] = v;
             i += 1;
         }
@@ -83,38 +85,66 @@ impl Queue {
     }
 }
 
+impl<T> Default for Queue<T>
+    where T: Default + Clone
+{
+    fn default() -> Queue<T> {
+        Queue {
+            container: vec![T::default(); 10],
+            head: 0,
+            tail: 0,
+        }
+    }
+}
+
+impl<T> Iterator for Queue<T>
+    where T: Default + Clone
+{
+    type Item = T;
+    fn next(&mut self) -> Option<T> {
+        self.pop()
+    }
+}
+
 #[test]
 fn test_queue() {
-    let q = Queue::new();
+    let q: Queue<i32> = Queue::new();
     assert_eq!(q.len(), 0);
     assert_eq!(q.capacity(), 10);
-    let q = Queue::with_capacity(25);
+    let q: Queue<i32> = Queue::with_capacity(25);
     assert_eq!(q.len(), 0);
     assert_eq!(q.capacity(), 25);
     let mut q = Queue::with_capacity(4);
-    q.put(29);
-    q.put(31);
-    q.put(37);
+    q.insert(29);
+    q.insert(31);
+    q.insert(37);
     assert_eq!(q.len(), 3);
     assert_eq!(q.capacity(), 4);
     let mut q = Queue::with_capacity(4);
-    q.put(29);
-    q.put(31);
-    q.put(37);
-    assert_eq!(q.take(), Some(29));
-    q.put(41);
-    q.put(43);
+    q.insert(29);
+    q.insert(31);
+    q.insert(37);
+    assert_eq!(q.pop(), Some(29));
+    q.insert(41);
+    q.insert(43);
     assert_eq!(q.len(), 4);
     assert_eq!(q.capacity(), 8);
-    assert_eq!(q.take(), Some(31));
-    assert_eq!(q.take(), Some(37));
-    assert_eq!(q.take(), Some(41));
-    assert_eq!(q.take(), Some(43));
+    assert_eq!(q.pop(), Some(31));
+    assert_eq!(q.pop(), Some(37));
+    assert_eq!(q.pop(), Some(41));
+    assert_eq!(q.pop(), Some(43));
     let mut q = Queue::from_vec(vec![2, 5, 7, 11]);
     assert_eq!(q.len(), 4);
-    assert_eq!(q.take(), Some(2));
-    assert_eq!(q.take(), Some(5));
-    q.put(13);
-    q.put(17);
+    assert_eq!(q.pop(), Some(2));
+    assert_eq!(q.pop(), Some(5));
+    q.insert(13);
+    q.insert(17);
     assert_eq!(q.into_vec(), vec![7, 11, 13, 17]);
+    let mut q = Queue::from_vec(vec![2, 5, 7, 11]);
+    let mut i = q.into_iter();
+    assert_eq!(i.next(), Some(2));
+    assert_eq!(i.next(), Some(5));
+    assert_eq!(i.next(), Some(7));
+    assert_eq!(i.next(), Some(11));
+    assert_eq!(i.next(), None);
 }
