@@ -4,37 +4,66 @@ mod primes;
 mod fib;
 mod queue;
 
-use crate::utils::change_to_base2;
-use crate::utils::i2a;
-use crate::utils::a2i;
+struct Node {
+    val: i32,
+    is_val: bool,
+    is_end: bool,
+    forward: i32,
+    backward: i32,
+    next: Option<Vec<Box<Node>>>,
+}
 
-fn main() {
-    let mut res = vec![];
-    for i in 1..=1000 {
-        let str = i2a(i).as_bytes().to_vec();
-        let mut r_str = str.clone();
-        r_str.reverse();
-        let mut n1_str = str.clone();
-        n1_str.append(&mut r_str.clone());
-        let mut n2_str = str.clone();
-        n2_str.pop();
-        n2_str.append(&mut r_str.clone());
-        let list = vec![
-            a2i(String::from_utf8(n1_str).unwrap()),
-            a2i(String::from_utf8(n2_str).unwrap())];
-        for n in list {
-            if n > 1_000_000 {
-                continue;
-            }
-            let base2 = change_to_base2(n).as_bytes().to_vec();
-            let mut r_base2 = base2.clone();
-            r_base2.reverse();
-            if r_base2 == base2 {
-                res.push(n);
+impl Node {
+    fn find_not_end_leaves(&self) -> Option<Vec<&Node>> {
+        if self.is_end {
+            return None;
+        }
+        match &self.next {
+            None => Some(vec![self]),
+            Some(list) => {
+                let mut res = vec![];
+                for n in list {
+                    if let Some(sub_list) = n.find_not_end_leaves() {
+                        for leaf in sub_list {
+                            res.push(leaf);
+                        }
+                    }
+                }
+                if res.len() > 0 {
+                    Some(res)
+                } else {
+                    None
+                }
             }
         }
     }
-    println!("{:?}", res);
-    let sum = res.into_iter().fold(0, |acc, x| { acc + &x });
-    println!("{}", sum)
 }
+
+struct Tree {
+    head: Box<Node>
+}
+
+impl Tree {
+    fn new(val: i32) -> Self {
+        Tree {
+            head: Box::new(Node {
+                val,
+                is_val: false,
+                is_end: false,
+                forward: val,
+                backward: val,
+                next: None,
+            })
+        }
+    }
+
+    fn generate(&mut self) -> i32 {
+        0
+    }
+
+    fn find_not_end_leaves(&self) -> Option<Vec<&Node>> {
+        self.head.find_not_end_leaves()
+    }
+}
+
+fn main() {}
