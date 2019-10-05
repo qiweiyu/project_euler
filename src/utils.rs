@@ -81,6 +81,9 @@ pub fn a2i(num_str: String) -> i32 {
 }
 
 pub fn i2a(n: i32) -> String {
+    if n == 0 {
+        return "0".to_string();
+    }
     let mut res = vec![];
     let mut num = n;
     let zero = '0' as u8;
@@ -90,6 +93,29 @@ pub fn i2a(n: i32) -> String {
     }
     res.reverse();
     String::from_utf8(res).unwrap()
+}
+
+pub fn l2i(num_list: Vec<i32>) -> u64 {
+    let mut res = 0;
+    for i in num_list {
+        res = res * 10;
+        res = res + i as u64;
+    }
+    res
+}
+
+pub fn i2l(n: u64) -> Vec<i32> {
+    if n == 0 {
+        return vec![0];
+    }
+    let mut res = vec![];
+    let mut num = n;
+    while num > 0 {
+        res.push((num % 10) as i32);
+        num = num / 10;
+    }
+    res.reverse();
+    res
 }
 
 pub fn factorial(n: u64) -> u64 {
@@ -117,4 +143,13 @@ pub fn change_to_base2(n: i32) -> String {
     }
     list.reverse();
     String::from_utf8(list).unwrap()
+}
+
+pub fn i_sqrt(n: u64) -> Option<u64> {
+    let root = (n as f64).sqrt().floor() as u64;
+    if n == root * root {
+        Some(root)
+    } else {
+        None
+    }
 }

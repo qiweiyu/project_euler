@@ -1,4 +1,3 @@
-use crate::primes;
 
 pub struct Fraction {
     pub numerator: i32,

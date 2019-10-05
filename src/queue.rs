@@ -77,7 +77,7 @@ impl<T> Queue<T>
         if self.len() == 0 {
             return;
         }
-        let mut v = self.pop().unwrap();
+        let v = self.pop().unwrap();
         self.insert(v);
     }
 
