@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 enum Suit { H, C, S, D }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Card {
     suit: Suit,
     val: i32,
@@ -31,16 +31,16 @@ impl Card {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Poker {
-    HighCard(i32, i32, i32, i32, i32),
-    OnePair(i32, i32, i32, i32),
-    TwoPairs(i32, i32, i32),
-    TreeKind(i32, i32, i32),
+    HighCard(Vec<i32>),
+    OnePair(Vec<i32>),
+    TwoPairs(Vec<i32>),
+    TreeKind(Vec<i32>),
     Straight(i32),
-    Flush(i32, i32, i32, i32, i32),
-    FullHouse(i32, i32),
-    Four(i32, i32),
+    Flush(Vec<i32>),
+    FullHouse(Vec<i32>),
+    Four(Vec<i32>),
     StraightFlush(i32),
 }
 
@@ -53,45 +53,32 @@ impl Poker {
             (true, true) => Poker::StraightFlush(list.get(0).unwrap().val),
             (true, false) => Poker::Straight(list.get(0).unwrap().val),
             (false, true) => {
-                let (i1, i2, i3, i4, i5) = Self::_fetch_val_to_tuple(&list);
-                Poker::Flush(
-                    i1, i2, i3, i4, i5,
-                )
+                Poker::Flush(Self::_fetch_val_to_list(&list))
             }
             _ => {
                 let count_val = Self::_count_val(&list);
                 if let Some(l4) = count_val.get(&4) {
-                    Poker::Four(l4[0], count_val.get(&1).unwrap()[0])
+                    Poker::Four(vec![l4[0], count_val.get(&1).unwrap()[0]])
                 } else if let Some(l3) = count_val.get(&3) {
                     if let Some(l2) = count_val.get(&2) {
-                        Poker::FullHouse(l3[0], l2[0])
+                        Poker::FullHouse(vec![l3[0], l2[0]])
                     } else {
                         let l1 = count_val.get(&1).unwrap();
-                        Poker::TreeKind(l3[0], l1[0], l1[1])
+                        Poker::TreeKind(vec![l3[0], l1[0], l1[1]])
                     }
                 } else if let Some(l2) = count_val.get(&2) {
                     let l1 = count_val.get(&1).unwrap();
                     if l2.len() == 2 {
-                        Poker::TwoPairs(l2[0], l2[1], l1[0])
+                        Poker::TwoPairs(vec![l2[0], l2[1], l1[0]])
                     } else {
-                        Poker::OnePair(l2[0], l1[0], l1[1], l1[2])
+                        Poker::OnePair(vec![l2[0], l1[0], l1[1], l1[2]])
                     }
                 } else {
                     let l1 = count_val.get(&1).unwrap();
-                    Poker::HighCard(l1[0], l1[1], l1[2], l1[3], l1[4])
+                    Poker::HighCard(l1.clone())
                 }
             }
         }
-    }
-
-    fn _fetch_val_to_tuple(list: &Vec<Card>) -> (i32, i32, i32, i32, i32) {
-        (
-            list.get(0).unwrap().val,
-            list.get(1).unwrap().val,
-            list.get(2).unwrap().val,
-            list.get(3).unwrap().val,
-            list.get(4).unwrap().val,
-        )
     }
 
     fn _fetch_val_to_list(list: &Vec<Card>) -> Vec<i32> {
@@ -118,9 +105,10 @@ impl Poker {
 
     fn _check_flush(list: &Vec<Card>) -> bool {
         let mut is_flush = true;
-        let first_suit = list.get(0).unwrap().suit;
+        let first_suit = &list.get(0).unwrap().suit;
         for card in list {
-            if card.suit != first_suit {
+            if &
+                card.suit != first_suit {
                 is_flush = false;
                 break;
             }
@@ -143,5 +131,48 @@ impl Poker {
             }).or_insert(vec![val]);
         }
         res
+    }
+
+    fn _val_to_num(list: &Vec<i32>) -> i32 {
+        let mut res = 0;
+        for i in list {
+            res = res * 15;
+            res = res + i;
+        }
+        res
+    }
+
+    fn _type_to_tuple(&self) -> (i32, Vec<i32>) {
+        match self {
+            Poker::HighCard(v) => (1, v.clone()),
+            Poker::OnePair(v) => (2, v.clone()),
+            Poker::TwoPairs(v) => (3, v.clone()),
+            Poker::TreeKind(v) => (4, v.clone()),
+            Poker::Straight(v) => (5, vec![*v]),
+            Poker::Flush(v) => (6, v.clone()),
+            Poker::FullHouse(v) => (7, v.clone()),
+            Poker::Four(v) => (8, v.clone()),
+            Poker::StraightFlush(v) => (9, vec![*v])
+        }
+    }
+}
+
+use std::cmp::Ordering;
+
+impl PartialOrd for Poker {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        let (self_level, self_val) = self._type_to_tuple();
+        let (other_level, other_val) = other._type_to_tuple();
+        if self_level == other_level {
+            Some(Self::_val_to_num(&self_val).cmp(&Self::_val_to_num(&other_val)))
+        } else {
+            Some(self_level.cmp(&other_level))
+        }
+    }
+}
+
+impl Ord for Poker {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
     }
 }
