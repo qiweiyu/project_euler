@@ -1,36 +1,4 @@
-
-pub struct Fraction {
-    pub numerator: i32,
-    pub denominator: i32,
-}
-
-impl Fraction {
-    pub fn new(numerator: i32, denominator: i32) -> Self {
-        assert_ne!(denominator, 0);
-        Fraction {
-            numerator,
-            denominator,
-        }
-    }
-}
-
-impl PartialEq for Fraction {
-    fn eq(&self, other: &Self) -> bool {
-        self.numerator * other.denominator == other.numerator * self.denominator
-    }
-}
-
-impl Eq for Fraction {}
-
-use std::fmt;
-
-impl fmt::Debug for Fraction {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}/{}", self.numerator, self.denominator)
-    }
-}
-
-pub fn cal_recurring_cycle(n: i32) -> Vec<i32> {
+pub fn cal_recurring_cycle(n: u64) -> Vec<u64> {
     use std::collections::HashMap;
     let mut res_list = vec![];
     let mut r_list = vec![];

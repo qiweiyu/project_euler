@@ -1,3 +1,6 @@
+extern crate num_bigint;
+
+use num_bigint::BigUint;
 use std::collections::HashMap;
 
 pub fn hash_map_to_string<T, R>(num: &HashMap<T, R>) -> String
@@ -116,6 +119,14 @@ pub fn i2l(n: u64) -> Vec<i32> {
     }
     res.reverse();
     res
+}
+
+pub fn bi2l(num: &BigUint) -> Vec<i32> {
+    let mut s = vec![];
+    for ch in num.to_str_radix(10).as_bytes() {
+        s.push(*ch as i32 - '0' as i32);
+    }
+    s
 }
 
 pub fn factorial(n: u64) -> u64 {
