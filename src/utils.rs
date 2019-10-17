@@ -107,7 +107,7 @@ pub fn l2i(num_list: Vec<i32>) -> u64 {
     res
 }
 
-pub fn i2l(n: u64) -> Vec<i32> {
+pub fn i2l(n: u128) -> Vec<i32> {
     if n == 0 {
         return vec![0];
     }
