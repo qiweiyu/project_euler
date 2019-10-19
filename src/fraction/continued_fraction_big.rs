@@ -1,12 +1,18 @@
-use super::fraction_normal::Fraction;
+use super::fraction_big::FractionBig;
+
+extern crate num_bigint;
+extern crate num_traits;
+
+use num_bigint::BigUint;
+use num_traits::{One, Zero};
 
 #[derive(Clone)]
-pub struct ContinuedFraction {
+pub struct ContinuedFractionBig {
     root: u128,
     list: Vec<u128>,
 }
 
-impl ContinuedFraction {
+impl ContinuedFractionBig {
     pub fn from_square_root(n: u128) -> Self {
         let root = (n as f64).sqrt().floor() as u128;
         if n == root * root {
@@ -35,26 +41,27 @@ impl ContinuedFraction {
         }
     }
 
-    pub fn get_convergent_fraction(&self, idx: usize) -> Fraction {
+    pub fn get_convergent_fraction(&self, idx: usize) -> FractionBig {
         if idx == 0 || self.list.len() == 0 {
-            Fraction::new(self.root, 1)
+            FractionBig::new(BigUint::from(self.root), One::one())
         } else {
+            let one: BigUint = One::one();
             let idx = idx - 1;
             let list_len = self.list.len();
             let pos = idx % list_len;
-            let mut res = Fraction::new(self.list[pos], 1);
+            let mut res = FractionBig::new(BigUint::from(self.list[pos]), one);
             for i in 1..=idx {
                 let pos = (idx - i) % list_len;
-                res = self.list[pos] + 1 / res;
+                res = 1 / res + self.list[pos];
             }
-            self.root + 1 / res
+            self.root.clone() + 1 / res
         }
     }
 }
 
 use std::fmt;
 
-impl fmt::Debug for ContinuedFraction {
+impl fmt::Debug for ContinuedFractionBig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[{}, {:?}]", self.root, self.list)
     }

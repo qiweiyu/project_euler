@@ -2,12 +2,12 @@ use std::ops::{Add, Mul, Div};
 
 #[derive(Copy, Clone)]
 pub struct Fraction {
-    numerator: u64,
-    denominator: u64,
+    numerator: u128,
+    denominator: u128,
 }
 
 impl Fraction {
-    pub fn new(numerator: u64, denominator: u64) -> Self {
+    pub fn new(numerator: u128, denominator: u128) -> Self {
         assert_ne!(denominator, 0);
         Fraction {
             numerator,
@@ -26,15 +26,15 @@ impl Fraction {
         self.numerator as f64 / self.denominator as f64
     }
 
-    pub fn to_tuple(self) -> (u64, u64) {
+    pub fn to_tuple(self) -> (u128, u128) {
         (self.numerator, self.denominator)
     }
 }
 
-impl Add<u64> for Fraction {
+impl Add<u128> for Fraction {
     type Output = Fraction;
 
-    fn add(mut self, other: u64) -> Self {
+    fn add(mut self, other: u128) -> Self {
         self.simplify();
         self.numerator = self.denominator * other + self.numerator;
         self
@@ -59,7 +59,7 @@ impl Add<Fraction> for Fraction {
     }
 }
 
-impl Add<Fraction> for u64 {
+impl Add<Fraction> for u128 {
     type Output = Fraction;
 
     fn add(self, mut other: Fraction) -> Fraction {
@@ -69,10 +69,10 @@ impl Add<Fraction> for u64 {
     }
 }
 
-impl Mul<u64> for Fraction {
+impl Mul<u128> for Fraction {
     type Output = Fraction;
 
-    fn mul(mut self, other: u64) -> Self {
+    fn mul(mut self, other: u128) -> Self {
         self.simplify();
         self.numerator = self.numerator * other;
         self.simplify();
@@ -95,7 +95,7 @@ impl Mul<Fraction> for Fraction {
     }
 }
 
-impl Mul<Fraction> for u64 {
+impl Mul<Fraction> for u128 {
     type Output = Fraction;
 
     fn mul(self, mut other: Fraction) -> Fraction {
@@ -106,10 +106,10 @@ impl Mul<Fraction> for u64 {
     }
 }
 
-impl Div<u64> for Fraction {
+impl Div<u128> for Fraction {
     type Output = Fraction;
 
-    fn div(mut self, rhs: u64) -> Self {
+    fn div(mut self, rhs: u128) -> Self {
         self.simplify();
         self.denominator = self.denominator * rhs;
         self.simplify();
@@ -132,7 +132,7 @@ impl Div<Fraction> for Fraction {
     }
 }
 
-impl Div<Fraction> for u64 {
+impl Div<Fraction> for u128 {
     type Output = Fraction;
 
     fn div(self, rhs: Fraction) -> Fraction {
@@ -160,8 +160,8 @@ impl fmt::Debug for Fraction {
     }
 }
 
-impl From<u64> for Fraction {
-    fn from(n: u64) -> Fraction {
+impl From<u128> for Fraction {
+    fn from(n: u128) -> Fraction {
         Fraction {
             numerator: n,
             denominator: 1,
@@ -170,7 +170,7 @@ impl From<u64> for Fraction {
 }
 
 #[inline]
-fn _gcd(a: u64, b: u64) -> u64 {
+fn _gcd(a: u128, b: u128) -> u128 {
     if b == 0 {
         a
     } else {
@@ -179,7 +179,7 @@ fn _gcd(a: u64, b: u64) -> u64 {
 }
 
 #[inline]
-fn _lcm(a: u64, b: u64) -> u64 {
+fn _lcm(a: u128, b: u128) -> u128 {
     let gcd = _gcd(a, b);
     (a / gcd) * b
 }

@@ -42,10 +42,10 @@ impl FractionBig {
     }
 }
 
-impl Add<u64> for FractionBig {
+impl Add<u128> for FractionBig {
     type Output = FractionBig;
 
-    fn add(mut self, other: u64) -> Self {
+    fn add(mut self, other: u128) -> Self {
         self.numerator = self.denominator.clone() * other + self.numerator.clone();
         self.simplify();
         self
@@ -68,7 +68,7 @@ impl Add<FractionBig> for FractionBig {
     }
 }
 
-impl Add<FractionBig> for u64 {
+impl Add<FractionBig> for u128 {
     type Output = FractionBig;
 
     fn add(self, mut other: FractionBig) -> FractionBig {
@@ -78,10 +78,10 @@ impl Add<FractionBig> for u64 {
     }
 }
 
-impl Mul<u64> for FractionBig {
+impl Mul<u128> for FractionBig {
     type Output = FractionBig;
 
-    fn mul(mut self, other: u64) -> Self {
+    fn mul(mut self, other: u128) -> Self {
         self.numerator = self.numerator.clone() * other;
         self.simplify();
         self
@@ -101,7 +101,7 @@ impl Mul<FractionBig> for FractionBig {
     }
 }
 
-impl Mul<FractionBig> for u64 {
+impl Mul<FractionBig> for u128 {
     type Output = FractionBig;
 
     fn mul(self, mut other: FractionBig) -> FractionBig {
@@ -111,10 +111,10 @@ impl Mul<FractionBig> for u64 {
     }
 }
 
-impl Div<u64> for FractionBig {
+impl Div<u128> for FractionBig {
     type Output = FractionBig;
 
-    fn div(mut self, rhs: u64) -> Self {
+    fn div(mut self, rhs: u128) -> Self {
         self.denominator = self.denominator.clone() * rhs;
         self.simplify();
         self
@@ -134,7 +134,7 @@ impl Div<FractionBig> for FractionBig {
     }
 }
 
-impl Div<FractionBig> for u64 {
+impl Div<FractionBig> for u128 {
     type Output = FractionBig;
 
     fn div(self, rhs: FractionBig) -> FractionBig {
@@ -162,8 +162,8 @@ impl fmt::Debug for FractionBig {
     }
 }
 
-impl From<u64> for FractionBig {
-    fn from(n: u64) -> FractionBig {
+impl From<u128> for FractionBig {
+    fn from(n: u128) -> FractionBig {
         FractionBig {
             numerator: BigUint::from(n),
             denominator: One::one(),

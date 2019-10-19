@@ -6,45 +6,38 @@ mod queue;
 mod poker;
 
 extern crate num_bigint;
+extern crate num_traits;
 
-use num_bigint::BigUint;
-use num_bigint::ToBigUint;
+use fraction::ContinuedFractionBig;
 use fraction::FractionBig;
+use num_bigint::BigUint;
+use num_traits::{One, Zero};
+use utils::i_sqrt;
 
 fn main() {
-    let list = generate(100);
-    let len = list.len();
-    let mut res = FractionBig::new(list[len - 1].to_biguint().unwrap(), 1.to_biguint().unwrap());
-    for i in 2..=len {
-        res = list[len - i] + 1 / res;
-    }
-    res.simplify();
-    println!("{:?}", res);
-    let (s, _) = res.to_tuple_string();
-    let mut sum = 0;
-    for ch in s.as_bytes() {
-        let ch = *ch as u8 - '0' as u8;
-        sum += ch as i32;
-    }
-    println!("sum: {}", sum);
-}
-
-fn generate(limit: usize) -> Vec<u64> {
-    let mut res = vec![];
-    for i in 0..limit {
-        res.push(cal(i) as u64);
-    }
-    res
-}
-
-fn cal(idx: usize) -> usize {
-    if idx == 0 {
-        2
-    } else {
-        if idx % 3 == 2 {
-            2 * (idx / 3 + 1)
-        } else {
-            1
+    let mut max = (0, Zero::zero(), Zero::zero());
+    let one: BigUint = One::one();
+    for i in 1..=1000 {
+        if let Some(v) = i_sqrt(i) {
+            continue;
+        }
+        let cf = ContinuedFractionBig::from_square_root(i as u128);
+        let mut j = 0;
+        loop {
+            j += 1;
+            let f = cf.get_convergent_fraction(j);
+            println!("{} {} {:?}", i, j, f);
+            let (x, y) = f.to_tuple();
+            let l_p: BigUint = x.clone() * x.clone() - one.clone();
+            let r_p: BigUint = i * y.clone() * y.clone();
+            if l_p == r_p {
+                println!("find for {} is {} {}", i, x, y);
+                if x > max.1 {
+                    max = (i, x, y);
+                }
+                break;
+            }
         }
     }
+    println!("res: {:?}", max)
 }
