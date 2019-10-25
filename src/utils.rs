@@ -164,3 +164,20 @@ pub fn i_sqrt(n: u64) -> Option<u64> {
         None
     }
 }
+
+pub fn check_permutation(a: u128, b: u128) -> bool {
+    fn n2l(mut n: u128) -> Vec<u8> {
+        let mut res = vec![0; 10];
+        while n > 0 {
+            let rem = (n % 10) as usize;
+            res[rem] = res[rem] + 1;
+            n = n / 10;
+        }
+        res
+    }
+    if a % 9 != b % 9 {
+        false
+    } else {
+        n2l(a) == n2l(b)
+    }
+}

@@ -152,6 +152,19 @@ impl PartialEq for Fraction {
 
 impl Eq for Fraction {}
 
+use std::cmp::Ordering;
+impl PartialOrd for Fraction {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some((self.numerator * other.denominator).cmp(&(other.numerator * self.denominator)))
+    }
+}
+
+impl Ord for Fraction {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self.numerator * other.denominator).cmp(&(other.numerator * self.denominator))
+    }
+}
+
 use std::fmt;
 
 impl fmt::Debug for Fraction {
